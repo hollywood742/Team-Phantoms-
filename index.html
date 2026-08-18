@@ -569,12 +569,19 @@ function render() {
   if (currentPlayerModalIndex !== null) renderPlayerModal();
 }
 
+function normalizeUrl(raw) {
+  const s = (raw || "").trim();
+  if (!s || s === "#") return "#";
+  if (/^https?:\/\//i.test(s)) return s;
+  return "https://" + s;
+}
+
 function renderBranding() {
   const heroLogo = document.getElementById("hero-logo-img");
   if (heroLogo) heroLogo.src = state.logoDataUrl || DEFAULT_LOGO_FULL;
   const ctaLogo = document.getElementById("cta-logo-img");
   if (ctaLogo) ctaLogo.src = state.logoDataUrl || DEFAULT_LOGO_ICON;
-  const url = state.discordUrl || "#";
+  const url = normalizeUrl(state.discordUrl);
   const navBtn = document.getElementById("nav-discord-btn");
   if (navBtn) navBtn.href = url;
   const ctaBtn = document.getElementById("cta-discord-btn");
@@ -611,7 +618,7 @@ function renderHero() {
     <p>${isEditing
       ? `<textarea class="edit-input" data-path="hero.desc" rows="3" style="resize:vertical;font-family:inherit;font-size:14px;">${esc(state.hero.desc)}</textarea>`
       : esc(state.hero.desc).replace(/\n/g,"<br>")}</p>
-    <a href="${state.discordUrl || '#'}" class="btn btn-fill">⬤ JOIN THE PHANTOM COMMUNITY</a>
+    <a href="${normalizeUrl(state.discordUrl)}" class="btn btn-fill">⬤ JOIN THE PHANTOM COMMUNITY</a>
     <div class="hero-note">Discord is where the action happens.</div>
   `;
 }
