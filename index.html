@@ -146,6 +146,8 @@
   .rank-mmr{font-size:10px;color:var(--muted);margin-top:3px;margin-left:2px;}
   .rank-mmr-primary{font-size:15px;font-weight:800;font-family:'Orbitron',sans-serif;color:var(--white);line-height:1.2;}
   .rank-sub{font-size:10px;color:var(--muted);margin-top:1px;}
+  .rank-mmr-row{font-size:10px;color:var(--muted);margin-top:4px;margin-left:2px;}
+  .rank-mmr-row .edit-input{font-size:11px;padding:1px 3px;}
   .playlist-rank-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);}
   .playlist-rank-row:last-child{border-bottom:none;}
   .playlist-label{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:0.04em;min-width:90px;}
@@ -702,11 +704,11 @@ function renderRoster() {
           return `
         <button class="rank-btn" data-rank-path="roster.${i}.ranks.2v2">
           <span class="rank-dot" style="background:${tierByKey(r2.tier).color}"></span>
-          <div>
-            <div class="rank-mmr-primary">${r2.mmr ? r2.mmr + " MMR" : "No MMR set"}</div>
-            <div class="rank-sub">${tierLabel} · 2v2</div>
-          </div>
-        </button>`;
+          <span class="rank-label">${tierLabel}</span>
+        </button>
+        <div class="rank-mmr-row">
+          ${editable(`roster.${i}.ranks.2v2.mmr`, r2.mmr ?? "", "width:56px;text-align:right;display:inline-block;")} MMR &middot; 2v2
+        </div>`;
         })()}
       </td>
       <td>${editableSelect(`roster.${i}.platform`, p.platform, PLATFORMS)}</td>
