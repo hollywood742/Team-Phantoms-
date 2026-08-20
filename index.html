@@ -402,19 +402,20 @@ function renderHero() {
 
 function renderStats() {
   document.getElementById("stats-sub").innerHTML = editable("statsSub", state.statsSub);
-  const HIDDEN_ICON_LABELS = ["GOALS ALLOWED / GAME", "SHOTS / GAME"];
+  const HIDDEN_ICON_INDEXES = [3, 4]; // Goals Allowed / Game, Shots / Game — fixed by position, not label text
+  const DEFAULT_LABELS = { 3: "GOALS ALLOWED / GAME", 4: "SHOTS / GAME" };
   if (isEditing) {
     let changed = false;
-    state.teamStats.forEach((s) => {
-      if (HIDDEN_ICON_LABELS.includes((s.label || "").toUpperCase()) && s.icon) {
-        s.icon = "";
-        changed = true;
-      }
+    HIDDEN_ICON_INDEXES.forEach((idx) => {
+      const s = state.teamStats[idx];
+      if (!s) return;
+      if (s.icon) { s.icon = ""; changed = true; }
+      if (!s.label) { s.label = DEFAULT_LABELS[idx]; changed = true; }
     });
     if (changed) scheduleSave();
   }
   document.getElementById("stats-section").innerHTML = state.teamStats.map((s,i) => {
-    const showIcon = s.icon && !HIDDEN_ICON_LABELS.includes((s.label || "").toUpperCase());
+    const showIcon = s.icon && !HIDDEN_ICON_INDEXES.includes(i);
     return `
     <div>
       <div class="stat-ico" style="${showIcon ? "" : "visibility:hidden;"}">${s.icon || "•"}</div>
