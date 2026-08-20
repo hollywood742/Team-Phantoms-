@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upcoming Events | Team Phantom</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#08070c; --panel:#100d18; --panel-2:#15121f; --line:#2a2438;
+    --purple:#8b5cf6; --purple-bright:#a78bfa; --purple-dim:#5b3fa0;
+    --white:#f5f3fa; --muted:#9089a8; --green:#4ade80; --red:#f87171; --gold:#e0b23d; --silver:#c4c9d1;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--white);font-family:'Rajdhani',sans-serif;font-size:16px;}
+  h1,h2,h3,.orb{font-family:'Orbitron',sans-serif;letter-spacing:0.02em;}
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;}
+  img{display:block;max-width:100%;}
+
+  header{position:sticky;top:0;z-index:40;background:rgba(8,7,12,0.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+  nav{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:14px 24px;max-width:1200px;margin:0 auto;}
+  .brand, .nav-right{min-width:0;}
+  .brand{display:flex;align-items:center;gap:10px;justify-self:start;}
+  .brand img{width:32px;height:auto;}
+  .brand .team{font-size:10px;color:var(--purple-bright);letter-spacing:0.3em;display:block;line-height:1.4;}
+  .brand .phantom{font-size:17px;font-weight:800;letter-spacing:0.05em;font-family:'Orbitron',sans-serif;}
+  .nav-links{display:flex;gap:28px;font-weight:600;letter-spacing:0.08em;font-size:13px;justify-self:center;white-space:nowrap;}
+  .nav-links a{color:var(--muted);}
+  .nav-links a.active{color:var(--white);}
+  .status-pill{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);margin-right:14px;}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--green);}
+  .dot.off{background:var(--muted);}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:8px;font-weight:700;font-size:13px;letter-spacing:0.04em;border:1px solid var(--purple);color:var(--white);background:transparent;cursor:pointer;transition:all .15s;}
+  .btn-fill{background:var(--purple);border-color:var(--purple);}
+  .btn-fill:hover{background:var(--purple-bright);}
+  .btn:hover{background:rgba(139,92,246,0.12);}
+  .btn-ghost{border-color:var(--line);color:var(--muted);}
+  .btn-sm{padding:6px 12px;font-size:11px;}
+  .nav-right{display:flex;align-items:center;justify-self:end;}
+
+  /* HERO */
+  .hero{position:relative;padding:70px 24px 56px;border-bottom:1px solid var(--line);overflow:hidden;isolation:isolate;}
+  .hero-bg{position:absolute;inset:0;z-index:0;}
+  .hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center 30%;opacity:0.95;filter:saturate(1.2) brightness(1.05);}
+  .hero-bg::after{content:'';position:absolute;inset:0;
+    background:
+      linear-gradient(180deg, rgba(8,7,12,0.05) 0%, rgba(8,7,12,0.25) 55%, rgba(8,7,12,0.92) 100%),
+      linear-gradient(90deg, rgba(8,7,12,0.35) 0%, rgba(8,7,12,0.0) 35%, rgba(8,7,12,0.0) 65%, rgba(8,7,12,0.4) 100%);
+  }
+  .hero-grid{position:relative;z-index:1;max-width:1200px;margin:0 auto;display:flex;justify-content:flex-end;}
+  .hero-copy{max-width:480px;padding:20px 24px;border-radius:16px;background:radial-gradient(120% 140% at 70% 40%, rgba(8,7,12,0.72) 0%, rgba(8,7,12,0.5) 55%, rgba(8,7,12,0.15) 100%);}
+  .tag-block{text-align:center;}
+  .tag-team{font-size:13px;letter-spacing:0.5em;color:var(--purple-bright);font-weight:600;font-family:'Orbitron',sans-serif;}
+  .tag-phantom{font-size:44px;font-weight:900;letter-spacing:0.02em;font-style:italic;font-family:'Orbitron',sans-serif;line-height:1.05;margin-top:2px;}
+  .tag-sub{color:var(--muted);font-size:12px;letter-spacing:0.14em;margin-top:6px;}
+  .tag-code{color:var(--purple-bright);font-size:11px;letter-spacing:0.3em;margin-top:4px;}
+  .hero-copy .orb{font-size:26px;font-weight:800;font-style:italic;line-height:1.2;text-shadow:0 2px 10px rgba(0,0,0,0.85);}
+  .hero-copy .l2{color:var(--purple-bright);}
+  .hero-rule{width:56px;height:2px;background:var(--purple);margin:14px 0;}
+  .hero-copy p{color:var(--white);font-weight:600;font-size:14px;line-height:1.7;margin-bottom:16px;text-shadow:0 1px 6px rgba(0,0,0,0.85);}
+  .hero-note{color:var(--muted);font-size:12px;margin-top:8px;text-shadow:0 1px 6px rgba(0,0,0,0.85);}
+
+  /* STATS BAR */
+  .stats-bar{border-bottom:1px solid var(--line);background:var(--panel);}
+  .stats-header{max-width:1200px;margin:0 auto;padding:18px 24px 0;display:flex;align-items:baseline;gap:12px;}
+  .stats-header .ico{color:var(--purple-bright);font-size:16px;}
+  .stats-header .ttl{font-size:14px;font-weight:700;letter-spacing:0.1em;}
+  .stats-header .sub{font-size:12px;color:var(--muted);}
+  .stats-grid{max-width:1200px;margin:0 auto;padding:16px 24px 22px;display:grid;grid-template-columns:repeat(7,1fr);gap:14px;text-align:center;}
+  .stat-ico{font-size:18px;color:var(--purple-bright);margin-bottom:6px;}
+  .stat-label{font-size:9.5px;letter-spacing:0.06em;color:var(--muted);font-weight:600;}
+  .stat-value{font-size:19px;font-weight:800;font-family:'Orbitron',sans-serif;margin-top:2px;}
+  .stat-sub{font-size:9.5px;color:var(--purple-bright);margin-top:2px;}
+
+  .content-grid{max-width:1200px;margin:0 auto;padding:40px 24px 0;display:grid;grid-template-columns:1.15fr 1fr;gap:22px;}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px;}
+  .section-title{font-size:13px;font-weight:700;letter-spacing:0.1em;display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .section-title .ico{color:var(--purple-bright);}
+  .section-title::after{content:'';flex:0 0 32px;height:2px;background:var(--purple);}
+  .section-title .view-all{margin-left:auto;font-size:11px;color:var(--purple-bright);font-weight:600;letter-spacing:0.04em;flex:none;}
+  .section-title.no-rule::after{display:none;}
+
+  table{width:100%;border-collapse:collapse;}
+  th{text-align:left;font-size:10px;letter-spacing:0.08em;color:var(--muted);font-weight:700;padding-bottom:10px;border-bottom:1px solid var(--line);}
+  td{padding:10px 6px;border-bottom:1px solid var(--line);vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  .avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--purple-dim),var(--purple));display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;position:relative;overflow:hidden;}
+  body.editing .avatar{cursor:pointer;}
+  .avatar-edit-hint{position:absolute;inset:0;background:rgba(0,0,0,0.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;opacity:0;transition:opacity .15s;}
+  .avatar:hover .avatar-edit-hint{opacity:1;}
+  .player-name-btn{background:none;border:none;color:var(--white);font:inherit;font-weight:700;font-size:14px;cursor:pointer;padding:0;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:3px;transition:text-decoration-color .15s;}
+  .player-name-btn:hover{text-decoration-color:var(--purple-bright);}
+  .player-cell{display:flex;align-items:center;gap:10px;}
+  .player-name{font-weight:700;font-size:14px;}
+  .player-name .tag{color:var(--purple-bright);}
+  .captain-badge{font-size:10px;color:var(--purple-bright);font-weight:700;letter-spacing:0.05em;}
+
+  /* tournament stats panel */
+  .tstats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px 10px;text-align:center;margin-bottom:16px;}
+  .tstat-label{font-size:9.5px;letter-spacing:0.06em;color:var(--muted);font-weight:600;}
+  .tstat-ico{font-size:17px;color:var(--purple-bright);margin:4px 0;}
+  .tstat-value{font-size:18px;font-weight:800;font-family:'Orbitron',sans-serif;}
+  .tstat-sub{font-size:9.5px;color:var(--purple-bright);}
+  .next-tourney{display:flex;align-items:center;gap:12px;border:1px solid var(--purple-dim);border-radius:10px;padding:12px 14px;background:rgba(139,92,246,0.06);}
+  .next-tourney .ico{color:var(--purple-bright);font-size:18px;}
+  .next-tourney .lbl{font-size:9.5px;color:var(--purple-bright);letter-spacing:0.08em;font-weight:700;}
+  .next-tourney .name{font-weight:700;font-size:13.5px;}
+  .next-date{width:44px;height:40px;border:1px solid var(--purple-dim);border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;}
+  .next-date .mon{font-size:8px;color:var(--purple-bright);font-weight:700;}
+  .next-date .day{font-size:13px;font-weight:800;font-family:'Orbitron',sans-serif;}
+
+  /* tournament history + events */
+  .hist-row,.event-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);}
+  .hist-row:last-child,.event-row:last-child{border-bottom:none;}
+  .hist-ico{font-size:18px;flex-shrink:0;}
+  .hist-title{font-weight:700;font-size:14px;}
+  .hist-type{font-size:11px;color:var(--muted);}
+  .hist-meta{text-align:right;min-width:110px;}
+  .hist-place{font-size:11px;font-weight:800;letter-spacing:0.03em;}
+  .hist-date{font-size:11px;color:var(--muted);margin-top:2px;}
+  .event-date{width:46px;height:46px;border:1px solid var(--purple-dim);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;}
+  .event-date .mon{font-size:8px;color:var(--purple-bright);font-weight:700;}
+  .event-date .day{font-size:15px;font-weight:800;font-family:'Orbitron',sans-serif;}
+  .event-title{font-weight:700;font-size:13px;}
+  .event-sub{font-size:11px;color:var(--muted);}
+  .event-ico{color:var(--purple-bright);font-size:15px;margin-left:auto;}
+
+  /* editable elements */
+  .edit-input{background:transparent;border:1px solid transparent;color:inherit;font:inherit;border-radius:4px;padding:1px 3px;width:100%;}
+  body.editing .edit-input{background:rgba(139,92,246,0.08);border:1px dashed var(--purple-dim);cursor:text;}
+  body.editing .edit-input:focus{outline:none;border:1px solid var(--purple);background:rgba(139,92,246,0.14);}
+  body.editing select{cursor:pointer;}
+  .icon-btn{background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;display:none;}
+  body.editing .icon-btn{display:inline-flex;}
+  .add-row-btn{display:none;margin-top:12px;font-size:13px;color:var(--purple-bright);background:none;border:1px dashed var(--purple-dim);border-radius:8px;padding:8px 12px;cursor:pointer;align-items:center;gap:6px;}
+  body.editing .add-row-btn{display:inline-flex;}
+  .nav-edit-input{width:70px;text-align:center;}
+
+  .rank-btn{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.03);border:1px solid var(--line);border-radius:8px;padding:4px 8px 4px 4px;cursor:default;color:var(--white);}
+  .rank-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;box-shadow:0 0 6px currentColor;}
+  body.editing .rank-btn{cursor:pointer;}
+  body.editing .rank-btn:hover{border-color:var(--purple-dim);}
+  .rank-label{font-size:13px;font-weight:600;color:var(--white);}
+  .rank-mmr{font-size:10px;color:var(--muted);margin-top:3px;margin-left:2px;}
+  .rank-mmr-primary{font-size:15px;font-weight:800;font-family:'Orbitron',sans-serif;color:var(--white);line-height:1.2;}
+  .rank-sub{font-size:10px;color:var(--muted);margin-top:1px;}
+  .rank-mmr-row{font-size:10px;color:var(--muted);margin-top:4px;margin-left:2px;}
+  .rank-mmr-row .edit-input{font-size:11px;padding:1px 3px;}
+  .playlist-rank-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);}
+  .playlist-rank-row:last-child{border-bottom:none;}
+  .playlist-label{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:0.04em;min-width:90px;}
+  .playlist-mmr-input{width:70px;text-align:right;}
+  .rank-popover{position:fixed;z-index:150;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:12px;width:300px;max-height:340px;overflow-y:auto;box-shadow:0 20px 50px rgba(0,0,0,0.5);}
+  .rank-tier-label{font-size:10px;letter-spacing:0.08em;color:var(--muted);font-weight:700;margin:8px 0 6px;}
+  .rank-opt{display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid transparent;border-radius:8px;padding:4px 8px;cursor:pointer;margin:0 4px 4px 0;color:var(--white);}
+  .rank-opt:hover{background:rgba(139,92,246,0.1);}
+  .rank-opt.selected{background:rgba(139,92,246,0.18);border-color:var(--purple);}
+  .rank-opt span{font-size:12px;font-weight:600;color:var(--white);}
+
+  .cta-banner{max-width:1200px;margin:36px auto 40px;padding:0 24px;}
+  .cta-inner{background:linear-gradient(120deg,rgba(139,92,246,0.12),rgba(139,92,246,0.03));border:1px solid var(--purple-dim);border-radius:14px;padding:26px 30px;display:flex;align-items:center;justify-content:space-between;gap:22px;flex-wrap:wrap;}
+  .cta-left{display:flex;align-items:center;gap:16px;}
+  .cta-left img{width:48px;}
+  .cta-title{font-weight:800;font-size:17px;font-style:italic;color:var(--purple-bright);}
+  .cta-sub{color:var(--muted);font-size:12px;margin-top:2px;}
+  .cta-right{text-align:right;}
+  .cta-right .fine{font-size:10px;color:var(--muted);letter-spacing:0.08em;margin-top:8px;}
+
+  footer.sitefoot{border-top:1px solid var(--line);padding:22px 24px;}
+  .footer-row{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);letter-spacing:0.1em;}
+  .footer-row .fname{color:var(--white);font-weight:700;font-family:'Orbitron',sans-serif;}
+  .footer-est{color:var(--muted);margin-left:10px;font-weight:600;}
+  .footer-tags span{margin:0 8px;color:var(--purple-bright);}
+  .editor-info{text-align:center;padding:10px;color:var(--muted);font-size:11px;border-top:1px solid var(--line);}
+  .editor-settings-wrap{display:none;max-width:1200px;margin:0 auto 30px;padding:0 24px;}
+  body.editing .editor-settings-wrap{display:block;}
+  .settings-row{display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap;}
+  .settings-label{font-size:12px;color:var(--muted);font-weight:600;min-width:90px;}
+  #settings-body .settings-row .edit-input{width:auto;flex:1;min-width:220px;}
+
+  .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100;display:none;align-items:center;justify-content:center;}
+  .modal-backdrop.open{display:flex;}
+  .modal{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:26px;width:320px;}
+  .modal h3{font-size:16px;margin-bottom:14px;}
+  .modal input{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;color:var(--white);font:inherit;margin-bottom:10px;}
+  .modal .err{color:var(--red);font-size:12px;min-height:16px;margin-bottom:6px;}
+  .lock-fab{position:fixed;bottom:20px;right:20px;z-index:30;width:44px;height:44px;border-radius:50%;background:var(--panel);border:1px solid var(--line);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;}
+  .lock-fab:hover{border-color:var(--purple-dim);color:var(--purple-bright);}
+
+  @media(max-width:1000px){
+    .hero-grid{justify-content:center;text-align:center;}
+    .hero-copy{max-width:100%;}
+    .nav-links{display:none;}
+    .stats-grid{grid-template-columns:repeat(3,1fr);}
+    .content-grid{grid-template-columns:1fr;}
+    .tstats-grid{grid-template-columns:repeat(3,1fr);}
+    .cta-inner{flex-direction:column;align-items:flex-start;}
+    .cta-right{text-align:left;}
+  }
+  @media(max-width:640px){
+    nav{grid-template-columns:auto 1fr;column-gap:10px;padding:12px 16px;}
+    .brand .phantom{font-size:15px;}
+    .status-pill{display:none;}
+    .nav-right{justify-content:flex-end;}
+    .btn{padding:8px 12px;font-size:12px;gap:6px;}
+    .footer-row{flex-direction:column;gap:10px;text-align:center;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <div class="brand">
+      <span><span class="team">TEAM</span><span class="phantom">PHANTOM</span></span>
+    </div>
+    <div class="nav-links" id="nav-links"></div>
+    <div class="nav-right">
+      <div class="status-pill"><span id="sync-dot" class="dot off"></span><span id="sync-text">Connecting…</span></div>
+      <a href="#" class="btn btn-fill" id="nav-discord-btn" data-discord-btn>⬤ JOIN DISCORD</a>
+    </div>
+  </nav>
+</header>
+
+<div style="max-width:1200px;margin:0 auto;padding:36px 24px 0;">
+  <div class="section-title"><span class="ico">📅</span>ALL UPCOMING EVENTS</div>
+</div>
+
+<div style="max-width:1200px;margin:0 auto;padding:16px 24px 56px;">
+  <div class="panel">
+    <div id="events-body"></div>
+    <button class="add-row-btn" id="add-event">+ Add Event</button>
+  </div>
+</div>
+
+<footer class="sitefoot">
+  <div class="footer-row">
+    <div><span class="fname">TEAM PHANTOM</span><span class="footer-est" id="footer-est"></span></div>
+    <div>[ PHNT ]</div>
+    <div class="footer-tags">COMPETE <span>•</span> IMPROVE <span>•</span> REPRESENT</div>
+  </div>
+</footer>
+<div class="editor-info" id="editor-info">Sign in to edit this page.</div>
+
+<div class="lock-fab" id="lock-fab" title="Editor sign in">🔒</div>
+
+<div class="modal-backdrop" id="login-backdrop">
+  <div class="modal">
+    <h3>Editor sign in</h3>
+    <div class="err" id="login-err"></div>
+    <input type="password" id="login-pass" placeholder="Password">
+    <div style="display:flex;gap:8px;margin-top:6px;">
+      <button class="btn btn-fill" id="login-submit" style="flex:1;justify-content:center;">Sign in</button>
+      <button class="btn btn-ghost" id="login-cancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+<script type="module">
+import {
+  state, isEditing, initStore, scheduleSave, eventRowHtml, esc, editable,
+  wireGlobalInteractions, wireLoginUI,
+  renderAuthChrome, renderDiscordButtons,
+} from "./phantom-common.js";
+
+function render() {
+  renderNav();
+  renderEvents();
+  renderFooter();
+  renderAuthChrome();
+  renderDiscordButtons();
+}
+
+function renderNav() {
+  const hrefs = ["index.html", "index.html#roster", "index.html#stats", "index.html#tournaments", "index.html#about"];
+  document.getElementById("nav-links").innerHTML = (state.nav || []).map((label, i) => `
+    <a href="${hrefs[i] || 'index.html'}">
+      ${isEditing ? `<input class="edit-input nav-edit-input" data-path="nav.${i}" value="${esc(label)}">` : esc(label)}
+    </a>`).join("");
+}
+
+function renderEvents() {
+  document.getElementById("events-body").innerHTML = (state.events || []).map((ev,i) => eventRowHtml(ev,i)).join("");
+}
+
+function renderFooter() {
+  const el = document.getElementById("footer-est");
+  if (el) el.innerHTML = editable("footerEst", state.footerEst);
+}
+
+document.getElementById("add-event").addEventListener("click", () => {
+  state.events.push({ month:"TBD", day:"--", title:"New Event", sub:"Details coming soon", icon:"•" });
+  scheduleSave(); render();
+});
+
+wireGlobalInteractions(render);
+wireLoginUI();
+initStore(render);
+</script>
+</body>
+</html>
