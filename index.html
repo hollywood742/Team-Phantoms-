@@ -68,7 +68,7 @@
   .stats-header .ico{color:var(--purple-bright);font-size:16px;}
   .stats-header .ttl{font-size:14px;font-weight:700;letter-spacing:0.1em;}
   .stats-header .sub{font-size:12px;color:var(--muted);}
-  .stats-grid{max-width:1200px;margin:0 auto;padding:16px 24px 22px;display:grid;grid-template-columns:repeat(7,1fr);gap:14px;text-align:center;}
+  .stats-grid{max-width:1200px;margin:0 auto;padding:16px 24px 22px;display:grid;grid-template-columns:repeat(5,1fr);gap:14px;text-align:center;}
   .stat-ico{font-size:18px;color:var(--purple-bright);margin-bottom:6px;}
   .stat-label{font-size:9.5px;letter-spacing:0.06em;color:var(--muted);font-weight:600;}
   .stat-value{font-size:19px;font-weight:800;font-family:'Orbitron',sans-serif;margin-top:2px;}
@@ -402,23 +402,23 @@ function renderHero() {
 
 function renderStats() {
   document.getElementById("stats-sub").innerHTML = editable("statsSub", state.statsSub);
-  const HIDDEN_ICON_INDEXES = [3, 4]; // Goals Allowed / Game, Shots / Game — fixed by position, not label text
-  const DEFAULT_LABELS = { 3: "GOALS ALLOWED / GAME", 4: "SHOTS / GAME" };
+  const REMOVE_LABELS = ["GOALS ALLOWED / GAME", "SHOTS / GAME"];
   if (isEditing) {
-    let changed = false;
-    HIDDEN_ICON_INDEXES.forEach((idx) => {
-      const s = state.teamStats[idx];
-      if (!s) return;
-      if (s.icon) { s.icon = ""; changed = true; }
-      if (!s.label) { s.label = DEFAULT_LABELS[idx]; changed = true; }
-    });
-    if (changed) scheduleSave();
+    const before = state.teamStats.length;
+    // Primary: remove by matching label text (works once labels are intact)
+    state.teamStats = state.teamStats.filter((s) => !REMOVE_LABELS.includes((s.label || "").toUpperCase().trim()));
+    // Fallback: legacy 7-stat layout where positions 3 & 4 (Goals Allowed, Shots)
+    // still have blank labels from an earlier edit — remove those exact slots.
+    if (state.teamStats.length === 7) {
+      state.teamStats.splice(4, 1);
+      state.teamStats.splice(3, 1);
+    }
+    if (state.teamStats.length !== before) scheduleSave();
   }
   document.getElementById("stats-section").innerHTML = state.teamStats.map((s,i) => {
-    const showIcon = s.icon && !HIDDEN_ICON_INDEXES.includes(i);
     return `
     <div>
-      <div class="stat-ico" style="${showIcon ? "" : "visibility:hidden;"}">${s.icon || "•"}</div>
+      <div class="stat-ico" style="${s.icon ? "" : "visibility:hidden;"}">${s.icon || "•"}</div>
       <div class="stat-label">${editable(`teamStats.${i}.label`, s.label)}</div>
       <div class="stat-value">${editable(`teamStats.${i}.value`, s.value)}</div>
       ${s.sub || isEditing ? `<div class="stat-sub">${editable(`teamStats.${i}.sub`, s.sub, 'text-align:center;')}</div>` : ""}
