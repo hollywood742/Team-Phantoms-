@@ -403,19 +403,23 @@ function renderHero() {
 function renderStats() {
   document.getElementById("stats-sub").innerHTML = editable("statsSub", state.statsSub);
   const REMOVE_LABELS = ["GOALS ALLOWED / GAME", "SHOTS / GAME"];
+  const isRemovable = (s, idx, arr) =>
+    REMOVE_LABELS.includes((s.label || "").toUpperCase().trim()) ||
+    (arr.length === 7 && (idx === 3 || idx === 4) && !s.label);
+
   if (isEditing) {
     const before = state.teamStats.length;
-    // Primary: remove by matching label text (works once labels are intact)
-    state.teamStats = state.teamStats.filter((s) => !REMOVE_LABELS.includes((s.label || "").toUpperCase().trim()));
-    // Fallback: legacy 7-stat layout where positions 3 & 4 (Goals Allowed, Shots)
-    // still have blank labels from an earlier edit — remove those exact slots.
-    if (state.teamStats.length === 7) {
-      state.teamStats.splice(4, 1);
-      state.teamStats.splice(3, 1);
-    }
+    state.teamStats = state.teamStats.filter((s, idx, arr) => !isRemovable(s, idx, arr));
     if (state.teamStats.length !== before) scheduleSave();
   }
-  document.getElementById("stats-section").innerHTML = state.teamStats.map((s,i) => {
+
+  // Always filter for display too (not just when signed in), so a logged-out
+  // visitor never sees stale removed stats even before an editor signs in
+  // once to trigger the permanent cleanup above.
+  const visibleStats = state.teamStats.filter((s, idx, arr) => !isRemovable(s, idx, arr));
+
+  document.getElementById("stats-section").innerHTML = visibleStats.map((s) => {
+    const i = state.teamStats.indexOf(s);
     return `
     <div>
       <div class="stat-ico" style="${s.icon ? "" : "visibility:hidden;"}">${s.icon || "•"}</div>
