@@ -87,8 +87,6 @@ export const DEFAULT_DATA = {
     { icon: "🎮", label: "GAMES PLAYED", value: "158", sub: "" },
     { icon: "🏆", label: "WINS - LOSSES", value: "102 - 56", sub: "64.6% WIN RATE" },
     { icon: "⚽", label: "GOALS / GAME", value: "2.76", sub: "" },
-    { icon: "", label: "GOALS ALLOWED / GAME", value: "1.58", sub: "" },
-    { icon: "", label: "SHOTS / GAME", value: "9.3", sub: "" },
     { icon: "✋", label: "SAVES / GAME", value: "4.7", sub: "" },
     { icon: "🤝", label: "ASSISTS / GAME", value: "1.8", sub: "" },
   ],
