@@ -402,13 +402,27 @@ function renderHero() {
 
 function renderStats() {
   document.getElementById("stats-sub").innerHTML = editable("statsSub", state.statsSub);
-  document.getElementById("stats-section").innerHTML = state.teamStats.map((s,i) => `
+  const HIDDEN_ICON_LABELS = ["GOALS ALLOWED / GAME", "SHOTS / GAME"];
+  if (isEditing) {
+    let changed = false;
+    state.teamStats.forEach((s) => {
+      if (HIDDEN_ICON_LABELS.includes((s.label || "").toUpperCase()) && s.icon) {
+        s.icon = "";
+        changed = true;
+      }
+    });
+    if (changed) scheduleSave();
+  }
+  document.getElementById("stats-section").innerHTML = state.teamStats.map((s,i) => {
+    const showIcon = s.icon && !HIDDEN_ICON_LABELS.includes((s.label || "").toUpperCase());
+    return `
     <div>
-      <div class="stat-ico" style="${s.icon ? "" : "visibility:hidden;"}">${s.icon || "•"}</div>
+      <div class="stat-ico" style="${showIcon ? "" : "visibility:hidden;"}">${s.icon || "•"}</div>
       <div class="stat-label">${editable(`teamStats.${i}.label`, s.label)}</div>
       <div class="stat-value">${editable(`teamStats.${i}.value`, s.value)}</div>
       ${s.sub || isEditing ? `<div class="stat-sub">${editable(`teamStats.${i}.sub`, s.sub, 'text-align:center;')}</div>` : ""}
-    </div>`).join("");
+    </div>`;
+  }).join("");
 }
 
 function renderRoster() {
