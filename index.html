@@ -91,6 +91,8 @@
   .avatar-edit-hint{position:absolute;inset:0;background:rgba(0,0,0,0.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;opacity:0;transition:opacity .15s;}
   .avatar:hover .avatar-edit-hint{opacity:1;}
   .player-name-btn{background:none;border:none;color:var(--white);font:inherit;font-weight:700;font-size:14px;cursor:pointer;padding:0;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:3px;transition:text-decoration-color .15s;}
+  .tourney-title-btn{background:none;border:none;color:var(--white);font:inherit;font-weight:700;font-size:14px;cursor:pointer;padding:0;text-align:left;text-decoration:underline;text-decoration-color:transparent;text-underline-offset:3px;transition:text-decoration-color .15s;}
+  .tourney-title-btn:hover{text-decoration-color:var(--purple-bright);}
   .player-name-btn:hover{text-decoration-color:var(--purple-bright);}
   .player-cell{display:flex;align-items:center;gap:10px;}
   .player-name{font-weight:700;font-size:14px;}
@@ -231,7 +233,7 @@
   </div>
 </section>
 
-<section class="stats-bar">
+<section class="stats-bar" id="stats">
   <div class="stats-header">
     <span class="ico">📊</span>
     <span class="ttl">CURRENT TEAM STATS</span>
@@ -262,9 +264,8 @@
   </div>
 
   <div>
-    <div class="section-title" id="stats"><span class="ico">🏆</span>TOURNAMENT STATS</div>
+    <div class="section-title"><span class="ico">🏆</span>NEXT TOURNAMENT</div>
     <div class="panel">
-      <div class="tstats-grid" id="tstats-grid"></div>
       <div class="next-tourney" id="next-tourney"></div>
     </div>
 
@@ -341,6 +342,16 @@
     <div id="player-modal-ranks"></div>
     <div class="rank-tier-label">STATS</div>
     <div id="player-modal-stats"></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="tourney-modal-backdrop">
+  <div class="modal" style="width:380px;max-height:85vh;overflow-y:auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;">
+      <div id="tourney-modal-title" style="font-weight:800;font-size:16px;flex:1;"></div>
+      <button id="tourney-modal-close" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;">✕</button>
+    </div>
+    <div class="stat-list" id="tourney-modal-body"></div>
   </div>
 </div>
 
@@ -818,6 +829,11 @@ function wireGlobalInteractions(rerender) {
       openPlayerModal(Number(nameBtn.dataset.playerIndex), rerender);
       return;
     }
+    const tourneyBtn = e.target.closest(".tourney-title-btn");
+    if (tourneyBtn) {
+      openTourneyModal(Number(tourneyBtn.dataset.tourneyIndex));
+      return;
+    }
     const avatarEl = e.target.closest(".avatar[data-avatar-index]");
     if (avatarEl) {
       if (!isEditing) return;
@@ -894,7 +910,7 @@ function render() {
   renderHero();
   renderStats();
   renderRoster();
-  renderTournamentStats();
+  renderNextTournament();
   renderHistory();
   renderEvents();
   renderFooter();
@@ -902,6 +918,7 @@ function render() {
   renderLogos();
   renderAuthChrome();
   renderDiscordButtons();
+  if (currentTourneyModalIndex !== null) renderTourneyModal();
 }
 
 function renderNav() {
@@ -969,20 +986,12 @@ function renderRoster() {
     : "";
 }
 
-function renderTournamentStats() {
-  document.getElementById("tstats-grid").innerHTML = state.tournamentStats.map((s,i) => `
-    <div>
-      <div class="tstat-label">${editable(`tournamentStats.${i}.label`, s.label)}</div>
-      <div class="tstat-ico">${s.icon}</div>
-      <div class="tstat-value">${editable(`tournamentStats.${i}.value`, s.value)}</div>
-      ${s.sub ? `<div class="tstat-sub">${editable(`tournamentStats.${i}.sub`, s.sub)}</div>` : ""}
-    </div>`).join("");
+function renderNextTournament() {
   const nt = state.nextTournament;
   document.getElementById("next-tourney").innerHTML = `
     <span class="ico">🏆</span>
     <div style="flex:1;">
-      <div class="lbl">NEXT TOURNAMENT</div>
-      <div class="name">${editable("nextTournament.name", nt.name)}</div>
+      <div class="name" style="font-size:15px;">${editable("nextTournament.name", nt.name)}</div>
     </div>
     <div class="next-date">
       <span class="mon">${editable("nextTournament.month", nt.month)}</span>
@@ -1011,7 +1020,7 @@ function renderHistory() {
     <div class="hist-row">
       <div class="hist-ico">${placementIcon(h.placement)}</div>
       <div style="flex:1;">
-        <div class="hist-title">${editable(`tournamentHistory.${i}.name`, h.name)}</div>
+        <div class="hist-title"><button class="tourney-title-btn" data-tourney-index="${i}">${esc(h.name)}</button></div>
         <div class="hist-type">${editable(`tournamentHistory.${i}.type`, h.type)}</div>
       </div>
       <div class="hist-meta">
@@ -1020,6 +1029,47 @@ function renderHistory() {
       </div>
       <button class="icon-btn" data-remove="tournamentHistory.${i}">✕</button>
     </div>`).join("");
+}
+
+/* ---------------- tournament detail modal (champion + bracket) ---------------- */
+let currentTourneyModalIndex = null;
+function openTourneyModal(i) {
+  currentTourneyModalIndex = i;
+  renderTourneyModal();
+  document.getElementById("tourney-modal-backdrop").classList.add("open");
+}
+function closeTourneyModal() {
+  document.getElementById("tourney-modal-backdrop").classList.remove("open");
+  currentTourneyModalIndex = null;
+}
+function renderTourneyModal() {
+  const i = currentTourneyModalIndex;
+  if (i === null || !state.tournamentHistory[i]) return;
+  const h = state.tournamentHistory[i];
+  document.getElementById("tourney-modal-title").innerHTML = editable(`tournamentHistory.${i}.name`, h.name);
+  const bracketUrl = (h.bracketUrl || "").trim();
+  document.getElementById("tourney-modal-body").innerHTML = `
+    <div class="stat-list-item"><span class="k">Placement</span><span class="v">${editable(`tournamentHistory.${i}.placement`, h.placement)}</span></div>
+    <div class="stat-list-item"><span class="k">Date</span><span class="v">${editable(`tournamentHistory.${i}.date`, h.date)}</span></div>
+    <div class="stat-list-item" style="border-bottom:none;"><span class="k">Champion</span><span class="v">${editable(`tournamentHistory.${i}.champion`, h.champion || "", "text-align:right;")}</span></div>
+    <div style="margin-top:14px;">
+      <label style="font-size:10px;letter-spacing:0.08em;color:var(--muted);font-weight:700;">BATTLEFY BRACKET LINK</label>
+      <div style="margin-top:5px;">${editable(`tournamentHistory.${i}.bracketUrl`, bracketUrl, "width:100%;box-sizing:border-box;")}</div>
+    </div>
+    ${bracketUrl ? `
+      <div style="margin-top:14px;">
+        <a href="${normalizeUrl(bracketUrl)}" target="_blank" rel="noopener" class="btn btn-fill" style="width:100%;justify-content:center;box-sizing:border-box;margin-bottom:10px;">🔗 View Full Bracket on Battlefy</a>
+        <iframe src="${normalizeUrl(bracketUrl)}" style="width:100%;height:320px;border:1px solid var(--line);border-radius:8px;background:#0a0912;" loading="lazy"></iframe>
+        <div style="font-size:10px;color:var(--muted);margin-top:6px;">If the bracket doesn't display above, the button opens it directly on Battlefy.</div>
+      </div>` : `
+      <div style="font-size:12px;color:var(--muted);margin-top:14px;">${isEditing ? "Paste your Battlefy bracket link above to show it here." : "Bracket link not added yet."}</div>`}
+  `;
+}
+function wireTourneyModal() {
+  document.getElementById("tourney-modal-close")?.addEventListener("click", closeTourneyModal);
+  document.getElementById("tourney-modal-backdrop")?.addEventListener("click", (e) => {
+    if (e.target.id === "tourney-modal-backdrop") closeTourneyModal();
+  });
 }
 
 function renderEvents() {
@@ -1103,6 +1153,7 @@ wireGlobalInteractions(render);
 wireLoginUI();
 wirePlayerModal(render);
 wireAvatarUpload(render);
+wireTourneyModal();
 initStore(render);
 </script>
 </body>
