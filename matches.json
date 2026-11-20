@@ -1,0 +1,12 @@
+{
+  "_example": {
+    "team": "black",
+    "opponent": "Opponent",
+    "tournament": "Tournament name",
+    "date": "2026-12-01",
+    "status": "final",
+    "result": "W",
+    "score": "3-1"
+  },
+  "matches": []
+}

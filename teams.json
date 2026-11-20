@@ -1,0 +1,40 @@
+{
+  "teams": [
+    {
+      "name": "Team Phantom Black",
+      "slug": "black",
+      "short": "PB",
+      "color": "#e0b23d",
+      "logo": "team-black.png",
+      "captain": null,
+      "starters": [],
+      "subs": [],
+      "tournaments": [],
+      "achievements": []
+    },
+    {
+      "name": "Team Cypher",
+      "slug": "cypher",
+      "short": "TC",
+      "color": "#22d3ee",
+      "logo": "team-cypher.png",
+      "captain": null,
+      "starters": [],
+      "subs": [],
+      "tournaments": [],
+      "achievements": []
+    },
+    {
+      "name": "Team Ghost",
+      "slug": "ghost",
+      "short": "TG",
+      "color": "#ef4444",
+      "logo": "team-ghost.png",
+      "captain": null,
+      "starters": [],
+      "subs": [],
+      "tournaments": [],
+      "achievements": []
+    }
+  ]
+}

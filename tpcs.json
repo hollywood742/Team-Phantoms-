@@ -1,0 +1,42 @@
+{
+  "about": "TPCS is Team Phantom's Rocket League 2v2 franchise championship series.",
+  "leagues": [
+    {
+      "name": "Uprising",
+      "description": ""
+    },
+    {
+      "name": "Ascent",
+      "description": ""
+    },
+    {
+      "name": "Eclipse",
+      "description": ""
+    }
+  ],
+  "howItWorks": [],
+  "divisions": [],
+  "registration": {
+    "notes": "",
+    "url": ""
+  },
+  "franchises": [],
+  "standings": [],
+  "schedule": [],
+  "results": [],
+  "currency": {
+    "summary": "",
+    "earn": [],
+    "spend": []
+  },
+  "freeAgency": {
+    "notes": "",
+    "players": []
+  },
+  "playoffs": {
+    "notes": "",
+    "bracketUrl": ""
+  },
+  "history": [],
+  "rules": []
+}
